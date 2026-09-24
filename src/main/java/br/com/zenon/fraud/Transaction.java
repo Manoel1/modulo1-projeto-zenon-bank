@@ -1,6 +1,8 @@
 package br.com.zenon.fraud;
 
-public record Transaction(int step, TipoPagamento type, Double amount, String nameOrig, double oldbalanceOrg,
-                          double newbalanceOrig, String nameDest, double oldbalanceDest,
-                          double newbalanceDest, int isFraud, int isFlaggedFraud) {
+import java.math.BigDecimal;
+
+public record Transaction(int step, TipoPagamento type, BigDecimal amount, String nameOrig, BigDecimal oldbalanceOrg,
+                          BigDecimal newbalanceOrig, String nameDest, BigDecimal oldbalanceDest,
+                          BigDecimal newbalanceDest, boolean isFraud, boolean isFlaggedFraud) {
 }
