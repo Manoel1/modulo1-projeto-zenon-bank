@@ -20,8 +20,9 @@ public class Main {
         IO.println("-----------------");
 
         var transactionIngestor = new TransactionIngestor();
-        List<Transaction> transactionList = transactionIngestor.retornaListArquivosNew("data/fraud_log.csv", 10);
-        transactionList.forEach(IO::println);
-        // IO.println(transactionList);
+        List<Transaction> transactionListError = transactionIngestor.retornaListArquivosNew("data/paysim_with_bad_data.csv", 16);
+        IO.println(transactionListError.size());
+        transactionListError.forEach(IO::println);
+
     }
 }
