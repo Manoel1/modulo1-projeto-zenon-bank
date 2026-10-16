@@ -34,7 +34,7 @@ public class FraudAnalyzer {
     public List<String> nomesFraudulentos() {
         return transactionStreamFraud()
                 .sorted(Comparator.comparing(Transaction::amount).reversed())
-                .map(transaction -> transaction.nameOrig())
+                .map(transaction -> transaction.nameOrig().trim())
                 .distinct()
                 .limit(5)
                 .toList();

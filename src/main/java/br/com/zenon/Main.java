@@ -1,9 +1,6 @@
 package br.com.zenon;
 
-import br.com.zenon.fraud.FraudAnalyzer;
-import br.com.zenon.fraud.TipoPagamento;
-import br.com.zenon.fraud.Transaction;
-import br.com.zenon.fraud.TransactionIngestor;
+import br.com.zenon.fraud.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,11 +16,11 @@ public class Main {
         IO.println(transaction2);
 
 
-        IO.println("-----------------");
+        IO.println("-----------------------------------------------------------------------------------------------------------------------");
 
         var transactionIngestor = new TransactionIngestor();
-        List<Transaction> transactionListError = transactionIngestor.retornaListArquivosNew("data/fraud_log.csv", 50000);
-        //IO.println(transactionListError.size());
+        List<Transaction> transactionListError = transactionIngestor.retornaListArquivosNew("data/fraud_log.csv", 100_000);
+        IO.println(transactionListError.size());
         //
         var fraud = new FraudAnalyzer(transactionListError);
         IO.println("1. Total de Fraudes: " + fraud.quantidadeFraudes());
@@ -40,5 +37,22 @@ public class Main {
         Map<TipoPagamento, Long> fraudesPorTransacoes = fraud.fraudesPorTransacoes();
         IO.println("5. Fraudes por Tipo: " + fraudesPorTransacoes);
         fraudesPorTransacoes.forEach((tipoPagamento, count) -> IO.println("- %s: %d".formatted(tipoPagamento, count)));
+
+        IO.println("-----------------------------------------------------------------------------------------------------------------------");
+        var transactionListRepository = new TransactionListRepository(transactionListError);
+        String name = "C1868032458";
+        long starTime = System.nanoTime();
+        transactionListRepository.findByNome(name).ifPresentOrElse(IO::println, () -> IO.println("Transação não encontrada para o cliente: " + name));
+        long endTime = System.nanoTime();
+        IO.println("Tempo de busca em List: (ms) - " + (endTime - starTime) / 1_000_000.0);
+
+        IO.println("-----------------------------------------------------------------------------------------------------------------------");
+
+        var transactionMapRepository = new TransactionMapRepository(transactionListError);
+        starTime = System.nanoTime();
+        transactionMapRepository.findByNome(name).ifPresentOrElse(IO::println, () -> IO.println("Transação não encontrada para o cliente: " + name));
+        endTime = System.nanoTime();
+        IO.println("Tempo de busca em Map: (ms) - " + (endTime - starTime) / 1_000_000.0);
+
     }
 }
