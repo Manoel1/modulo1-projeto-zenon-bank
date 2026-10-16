@@ -1,11 +1,13 @@
 package br.com.zenon;
 
+import br.com.zenon.fraud.FraudAnalyzer;
 import br.com.zenon.fraud.TipoPagamento;
 import br.com.zenon.fraud.Transaction;
 import br.com.zenon.fraud.TransactionIngestor;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,9 +22,23 @@ public class Main {
         IO.println("-----------------");
 
         var transactionIngestor = new TransactionIngestor();
-        List<Transaction> transactionListError = transactionIngestor.retornaListArquivosNew("data/paysim_with_bad_data.csv", 16);
-        IO.println(transactionListError.size());
-        transactionListError.forEach(IO::println);
-
+        List<Transaction> transactionListError = transactionIngestor.retornaListArquivosNew("data/fraud_log.csv", 50000);
+        //IO.println(transactionListError.size());
+        //
+        var fraud = new FraudAnalyzer(transactionListError);
+        IO.println("1. Total de Fraudes: " + fraud.quantidadeFraudes());
+        //
+        var maioresFraudes = fraud.maioresFrauds(3);
+        IO.println("2. Top 3 Fraudes de Maior Valor: ");
+        maioresFraudes.stream().map(Transaction::amount).forEach(IO::println);
+        //
+        IO.println("3. Clientes Suspeitos: ");
+        var nomesFraudulentos = fraud.nomesFraudulentos();
+        nomesFraudulentos.forEach(IO::println);
+        IO.println("4. Prejuízo Total: " + fraud.somaPrejuizo());
+        //
+        Map<TipoPagamento, Long> fraudesPorTransacoes = fraud.fraudesPorTransacoes();
+        IO.println("5. Fraudes por Tipo: " + fraudesPorTransacoes);
+        fraudesPorTransacoes.forEach((tipoPagamento, count) -> IO.println("- %s: %d".formatted(tipoPagamento, count)));
     }
 }
